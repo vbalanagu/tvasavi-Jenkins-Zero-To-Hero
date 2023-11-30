@@ -1,0 +1,29 @@
+pipeline {
+    agent {
+        docker {
+            image 'tvasavi/maven-tvasavi-docker-agent:v1'
+            args '--user root -v /var/run/docker.sock:/var/run/docker.sock' //mount Docker socket to access the host's Docker daemon
+        }
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                sh 'echo passed'
+                //git branch: 'main', url: 'https://github.com/vbalanagu/tvasavi-Jenkins-Zero-To-Hero.git'
+            }
+        }
+        stage('Build and Test') {
+            steps {
+                sh 'ls -ltr'
+                //Build the project and create jar file
+                sh 'cd spring-boot-app && mvn clean package' //package is used as the image will be deployed on docker registry
+            }
+        }
+        stage('Static Code Analysis') {
+            environment {
+                SONAR_URL = ""
+            }
+        }
+
+    }
+}
